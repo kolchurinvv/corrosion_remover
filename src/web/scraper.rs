@@ -29,11 +29,8 @@ pub fn parse_anchors(doc: Html, base_url: String, categories: Vec<&str>) {
 }
 
 pub fn test_parser(href: String, base_url: String) {
-    let categories: Vec<String> = seed()
-        .unwrap()
-        .iter()
-        .map(|cat| cat.1.existing_url.to_string())
-        .collect();
+    let seed: HashMap<String, Box<Category>> = seed().unwrap();
+    let categories: Vec<&str> = seed.iter().map(|cat| cat.1.existing_url.as_str()).collect();
 
     let url_parts: Vec<&str> = href
         .trim_start_matches(&base_url)
@@ -42,15 +39,14 @@ pub fn test_parser(href: String, base_url: String) {
         .collect();
 
     for part in &url_parts {
-        if categories.contains(&part.to_string()) {
+        if categories.contains(part) {
             println!("part: {}", part);
-            let root_parent_category = &part.to_string();
+            let root_parent_category = part;
             let prod_name = url_parts.last().expect("last part of the url should exist");
             let sub_cats: Vec<&str> = url_parts
                 .iter()
-                .skip_while(|x| x != &part && x != &prod_name && x != &root_parent_category)
-                .skip(1)
-                .cloned()
+                .filter(|x| x != &part && x != &prod_name && x != &root_parent_category)
+                .copied()
                 .collect();
 
             println!("Sub-categories: {:?}", sub_cats);
@@ -59,13 +55,3 @@ pub fn test_parser(href: String, base_url: String) {
         }
     }
 }
-// if let Some(cat) = href
-//     .replace(&base_url, "")
-//     .split("/")
-//     .find(|part| categories.contains(&part.to_string()))
-// {
-//     println!("found a match: {}", cat);
-// } else {
-//     println!("not found for");
-// }
-// }
