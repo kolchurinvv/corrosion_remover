@@ -115,6 +115,7 @@ checksum = "06ea2b9bc92be3c2baa9334a323ebca2d6f074ff852cd1d7b11064035cd3868f"
 name = "corrosion_remover"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "reqwest",
  "scraper",
  "tokio",
