@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error::Error};
+use std::{collections::HashMap, error::Error, sync::Arc};
 
 #[derive(Hash, Eq, PartialEq, Clone, Debug)]
 pub enum Lang {
@@ -19,7 +19,7 @@ pub struct Category {
 }
 
 impl Category {
-    fn new(name: &str, existing_url: &str, local: HashMap<Lang, String>) -> Self {
+    pub fn new(name: &str, existing_url: &str, local: HashMap<Lang, String>) -> Self {
         Category {
             name: name.to_string(),
             url: name.to_string(),
@@ -57,7 +57,14 @@ impl Category {
 struct Color {
     name: String,
     url: String,
-    // value: String,
+    value: String,
+}
+
+#[derive(Debug)]
+struct ProductPictures {
+    full_size: String,
+    medium_size: String,
+    thumbnail: String,
 }
 
 #[derive(Clone, Debug)]
@@ -66,15 +73,23 @@ pub struct Product {
     char: Option<String>,
     colors: Option<Vec<Color>>,
     desc: Option<String>,
+    pics: Option<Arc<ProductPictures>>,
 }
 
 impl Product {
-    fn new(name: &str, char: Option<&str>, colors: Option<Vec<Color>>, desc: Option<&str>) -> Self {
+    fn new(
+        name: &str,
+        char: Option<&str>,
+        colors: Option<Vec<Color>>,
+        desc: Option<&str>,
+        pics: Option<Arc<ProductPictures>>,
+    ) -> Self {
         let mut prod = Product {
             name: name.to_string(),
             char: None,
             colors: None,
             desc: None,
+            pics: None,
         };
         if let Some(char) = char {
             prod.char = Some(char.to_string());
@@ -84,6 +99,9 @@ impl Product {
         };
         if let Some(desc) = desc {
             prod.desc = Some(desc.to_string());
+        };
+        if let Some(pics) = pics {
+            prod.pics = Some(pics);
         };
         prod
     }
